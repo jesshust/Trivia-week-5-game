@@ -1,17 +1,19 @@
 var correct=0; 
 var incorrect=0; 
-var unanswered=0; 
-var win=0; 
-var timeCounter; 
-var timesUp; 
-var time =30; //for timer
+var unanswered=0;  
+var timeCounter;  
+var time; //for timer
+var question; 
 var questions=[ 
-	// {
-	// 	question: "How old was Sheldon when he started college?", 
-	// 	answers=["13","11","15","7",]  
-	// 	triviaImage: url("assets/images/sheldon.jpg"), 
-	// 	answer= answers[1],  
-	// }; 
+	{
+		question: "How old was Sheldon when he started college?", 
+		choice1: "13",
+		choice2: "11",
+		choice3: "15", 
+		choice4: "7",  
+		triviaImage: "assets/images/sheldon.jpg", 
+		answer: 2  
+	},
 
 	{
 		question: "Where is Penny from?", 
@@ -19,8 +21,8 @@ var questions=[
 		choice2:"Fremont, Nebraska",  
 		choice3: "Omaha, Nebraska",  
 		choice4:"Lincoln, Nebraska",  
-		triviaImage: url("assets/images/penny.jpeg"), 
-		answer: 3, 
+		triviaImage: "assets/images/penny.jpeg", 
+		answer: 3 
 
 	},   
 
@@ -30,8 +32,8 @@ var questions=[
 		choice2:"8",  
 		choice3: "2", 
 		choice4:"6", 
-		triviaImage: url("assets/images/howard.jpg"), 
-		answer: 4, 
+		triviaImage: "assets/images/howard.jpg", 
+		answer: 4
 	},   
 
 	{
@@ -40,8 +42,8 @@ var questions=[
 		choice2:"Koothrapali",
 		choice3: "Koothrappali", 
 		choice4:"Kothrappali", 
-		triviaImage: url("assets/images/raj.jpg"), 
-		answer: 3, 
+		triviaImage: "assets/images/raj.jpg", 
+		answer: 3 
 	},  
 
 	{
@@ -50,64 +52,131 @@ var questions=[
 		choice2:"Caltech",
 		choice3: "Berkley", 
 		choice4:"UCLA",
-		triviaImage: url("assets/images/work.jpg"),
-		answer: 2, 
-	},   
+		triviaImage: "assets/images/work.jpg",
+		answer: 2 
+	}  
 
-] 
+];
 
-function timer(){
-	time--; 
-	$('#timer').html('<h2>Timer: ' + time +'s</h2>'); 
+function timeCounterFunction(){
+	if (question >= 0 && question < questions.length) { //are we on a valid question
+		time--; 
+		$(".timeCounter").show(); 
+		$(".timeCounter").html('<h2>Timer: ' + time +'s</h2>'); 
+		if (time <=0){ 
+			unanswered++; 
+			nextQuestion(); 
+		} 
+	} 
 }; 
 
 function gameOver(){
+	$(".timeCounter").hide(); 
+	$(".triviaImage").hide(); 
+	$(".answers").hide(); 
+	$(".triviaQuestion").hide(); 
+	$("#restartGame").show(); 
+	$("#correct").show(); 
+	$("#incorrect").show(); 
+	$("#unanswered").show(); 
+
 	if(correct ===1) {
-		$('correct').html('<h2>You got ' + correct + " Question(s) Right!!</h2>");
+		$("#correct").html('<h2>You got ' + correct + " Question(s) Right!!</h2>");
 	}else{ 
-		$('correct').html('<h2>You got ' + correct + " Question(s) Right!</h2>"); 
+		$("#correct").html('<h2>You got ' + correct + " Question(s) Right!</h2>"); 
 	}
 	if(incorrect ===1) {
-		$('incorrect').html('<h2>You got ' + incorrect + " Question(s) Wrong!</h2>");
+		$("#incorrect").html('<h2>You got ' + incorrect + " Question(s) Wrong!</h2>");
 	}else{ 
-		$('incorrect').html('<h2>You got ' + incorrect + " Question(s) Wrong!</h2>"); 
-	}; 
+		$("#incorrect").html('<h2>You got ' + incorrect + " Question(s) Wrong!</h2>"); 
+	} 
 
 	if(unanswered===1){
-		$('unanswered').html('<h2>' + unanswered + ' Questions Unanswered</h2>'); 
+		$("#unanswered").html('<h2>' + unanswered + ' Questions Unanswered!</h2>'); 
 	}else {
-		$('unanswered').html('<h2>' + unanswered + ' Question(s) Unanswered</h2>'); 
+		$("#unanswered").html('<h2>' + unanswered + ' Question(s) Unanswered!</h2>'); 
 	}
-	// $('#startGame').
+	
+}; 
+
+function checkAnswer(answer){
+	if (questions[question].answer===answer){
+		correct++; 
+	}else {
+		incorrect++; 
+	} 
+	nextQuestion(); 
 }
 
-function showQuestion(){
-	question=Math.floor(Math.random()*questions.length); 
-	time=30; 
-	nextQuestion(); 
+function showQuestion(){ 
+	time=15; 
+	console.log(question); 
+	$(".triviaQuestion").html("<h2> " + questions[question].question + "</h2>"); 
+	$(".triviaImage").attr( 'src', questions[question].triviaImage); 
+	$(".triviaImage").show();
+	$(".answers").show();  
+	$("#button1").text(questions[question].choice1); 
+	$("#button2").text(questions[question].choice2); 
+	$("#button3").text(questions[question].choice3); 
+	$("#button4").text(questions[question].choice4);
+
+
 }; 
+function restartGame(){
+		question=-1; 
+		nextQuestion();
+		correct=0; 
+		incorrect=0; 
+		unanswered=0;
+		$("#restartGame").hide(); 
+		$("#correct").hide(); 
+		$("#incorrect").hide(); 
+		$("#unanswered").hide();  
+
+}; 
+
+$(document).ready (function() {
+	$("#button1").on("click", function(){ 
+		checkAnswer(1); 
+	}); 
+	$("#button2").on("click", function(){ 
+		checkAnswer(2); 
+	}); 
+	$("#button3").on("click", function(){ 
+		checkAnswer(3); 
+	}); 
+	$("#button4").on("click", function(){ 
+		checkAnswer(4); 
+	}); 
+	timeCounter=setInterval(timeCounterFunction, 1000); 
+	$('#restartGame').on("click", function(){	
+	restartGame(); 
+	}); 
+	$('.triviaImage').hide(); 
+	$('.answers').hide(); 
+	$("#restartGame").hide(); 
+	$('#startGame').on('click', function(){
+	$('#startGame').hide(); 
+	$('#gameDirections').hide();
+		restartGame(); 
+	});  
+});
 
 function nextQuestion(){
-	question=Math.floor(Math.random()*questions.length); 
-	time=30;  
-	if(questions.length==win){
+	question++;   
+	if(question==questions.length){
 		gameOver(); 
 	} else {
-		showQuestion(); 
+		showQuestion();
+
 	}
-
-}; 
-
-function timesUp(){
-	clearInterval(timesUp); 
-	clearInterval(timeCounter); 
-	unanswered++; 
 }; 
 
 
-$(document).ready(function(){
-	$('#startGame').on('click', function(){
-		showQuestion(); 
-	});
-}); 
+
+
+
+// }; 
+
+
 
