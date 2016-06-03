@@ -1,7 +1,7 @@
 var correct=0; 
 var incorrect=0; 
 var unanswered=0;  
-var timeCounter;  
+var timer;  
 var time; //for timer
 var question; 
 var questions=[ 
@@ -58,7 +58,7 @@ var questions=[
 
 ];
 
-function timeCounterFunction(){
+function timerFunction(){
 	if (question >= 0 && question < questions.length) { //are we on a valid question
 		time--; 
 		$(".timeCounter").show(); 
@@ -110,11 +110,22 @@ function checkAnswer(answer){
 
 function showQuestion(){ 
 	time=15; 
+	$(".timeCounter").show(); 
+	$(".timeCounter").html('<h2>Timer: ' + time +'s</h2>');
+	
+	if (timer == null) {
+		timer = setInterval(timerFunction, 1000);
+	}else{
+		clearInterval(timer); 
+		timer= setInterval(timerFunction, 1000); 
+	} 
+
 	console.log(question); 
 	$(".triviaQuestion").html("<h2> " + questions[question].question + "</h2>"); 
 	$(".triviaImage").attr( 'src', questions[question].triviaImage); 
 	$(".triviaImage").show();
-	$(".answers").show();  
+	$(".answers").show();
+	$(".triviaQuestion").show();   
 	$("#button1").text(questions[question].choice1); 
 	$("#button2").text(questions[question].choice2); 
 	$("#button3").text(questions[question].choice3); 
@@ -148,7 +159,7 @@ $(document).ready (function() {
 	$("#button4").on("click", function(){ 
 		checkAnswer(4); 
 	}); 
-	timeCounter=setInterval(timeCounterFunction, 1000); 
+
 	$('#restartGame').on("click", function(){	
 	restartGame(); 
 	}); 
